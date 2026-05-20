@@ -1,5 +1,5 @@
-import AuthForm from "../components/AuthForm";
-import AuthSplitLayout from "../components/AuthSplitLayout";
+import AuthForm from "@/components/AuthForm";
+import AuthSplitLayout from "@/components/AuthSplitLayout";
 
 export default function LoginPage() {
   return (

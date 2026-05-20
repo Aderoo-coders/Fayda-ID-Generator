@@ -2,24 +2,27 @@ import Link from "next/link";
 
 export default function AuthSplitLayout({ title, subtitle, mode, children }) {
   const isLogin = mode === "login";
+  const isRegister = mode === "register";
 
   return (
     <main className="min-h-screen bg-[#060b1d] text-white">
       <section className="grid min-h-screen lg:grid-cols-2">
+        {/* Left side */}
         <div className="flex items-center justify-center px-6 py-10">
           <div className="w-full max-w-lg">
             <h1 className="text-2xl text-center">{title}</h1>
-            <p className="mt-6 text-lg text-center text-slate-400">{subtitle}</p>
-            <div className="mt-8">{children}</div>
-            <p className="mt-8 text-lg text-center text-slate-400">
-              {isLogin ? "Don’t have an account?" : "Already have an account?"}{" "}
+            <p className="mt-2 text-md text-center text-slate-400">{subtitle}</p>
+            <div className="mt-6">{children}</div>
+            <p className="mt-6 text-sm text-center text-slate-400">
+              {isLogin ? "Don’t have an account?" : "Already have an account?"}{""}
               <Link className="text-[#8a7cff]" href={isLogin ? "/register" : "/login"}>
-                {isLogin ? "Create account" : "Sign in"}
+                {isLogin ? "Create an account" : "Sign in"}
               </Link>
             </p>
           </div>
         </div>
 
+        {/* Right side */}
         <div className="relative hidden overflow-hidden lg:block">
           <div className="absolute inset-0 bg-[#4e35f1]" />
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:48px_48px]" />

@@ -1,6 +1,5 @@
 import Link from "next/link";
-import LandingHero from "./components/LandingHero";
-import UploadPanel from "./components/UploadPanel";
+import LandingHero from "@/components/LandingHero";
 
 export default function HomePage() {
   const steps = [
