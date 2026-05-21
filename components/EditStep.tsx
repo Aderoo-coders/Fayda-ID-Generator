@@ -49,10 +49,10 @@ const backFields: { key: keyof IDCardData; label: string; placeholder: string; e
   { key: 'zone', label: 'Zone', placeholder: 'Zone' },
   { key: 'woreda', label: 'Woreda', placeholder: 'Woreda' },
   { key: 'kebele', label: 'Kebele', placeholder: 'Kebele' },
-  { key: 'house_no', label: 'House Number', placeholder: 'House No.' },
-  { key: 'address_am', label: 'Address (Amharic)', placeholder: 'አድራሻ', ethiopic: true },
-  { key: 'blood_type', label: 'Blood Type', placeholder: 'A+, B-, O+, AB+' },
-  { key: 'emergency_contact', label: 'Emergency Contact', placeholder: '+251 9XX XXX XXX' },
+  // { key: 'house_no', label: 'House Number', placeholder: 'House No.' },
+  // { key: 'address_am', label: 'Address (Amharic)', placeholder: 'አድራሻ', ethiopic: true },
+  // { key: 'blood_type', label: 'Blood Type', placeholder: 'A+, B-, O+, AB+' },
+  // { key: 'emergency_contact', label: 'Emergency Contact', placeholder: '+251 9XX XXX XXX' },
 ];
 
 export function EditStep({
