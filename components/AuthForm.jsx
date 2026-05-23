@@ -44,6 +44,15 @@ export default function AuthForm({ mode }) {
   const [message, setMessage] = useState("");
   const [formPending, setFormPending] = useState(false);
   const [googleBusy, setGoogleBusy] = useState(false);
+  const [appOrigin, setAppOrigin] = useState("");
+
+  useEffect(() => {
+    setAppOrigin(window.location.origin);
+  }, []);
+
+  const googleBlockedMessage = appOrigin
+    ? `Google blocked this app. In Google Cloud Console → Credentials → your Web client, add Authorized JavaScript origin: ${appOrigin} (and http://localhost:3000 if you use another port). If the app is in Testing, add your Gmail under OAuth consent screen → Test users.`
+    : "Google sign-in was blocked. Check Authorized JavaScript origins in Google Cloud Console.";
 
   const onFormPending = useCallback((pending) => {
     setFormPending(pending);
@@ -52,7 +61,7 @@ export default function AuthForm({ mode }) {
   useEffect(() => {
     if (state?.access) {
       window.localStorage.setItem("fayda_access_token", state.access);
-      router.push("/");
+      router.push("/dashboard");
     }
   }, [state, router]);
 
@@ -65,7 +74,7 @@ export default function AuthForm({ mode }) {
       );
       if (result.access) {
         window.localStorage.setItem("fayda_access_token", result.access);
-        router.push("/");
+        router.push("/dashboard");
       } else {
         setMessage(result.error || "Google authentication failed.");
       }
@@ -170,7 +179,7 @@ export default function AuthForm({ mode }) {
             <GoogleLogin
               onSuccess={handleGoogleAuth}
               onError={() => {
-                setMessage("Google sign-in was unsuccessful.");
+                setMessage(googleBlockedMessage);
                 setGoogleBusy(false);
               }}
               theme="filled_black"
@@ -183,6 +192,13 @@ export default function AuthForm({ mode }) {
         ) : (
           <p className="text-center text-xs text-slate-500 pt-2">
             Set <code className="text-slate-400">NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> to enable Google sign-in.
+          </p>
+        )}
+
+        {GOOGLE_CLIENT_ID && process.env.NODE_ENV === "development" && appOrigin && (
+          <p className="text-center text-[11px] text-slate-500 pt-2 leading-snug">
+            Dev origin for Google Console:{" "}
+            <code className="text-slate-400">{appOrigin}</code>
           </p>
         )}
 

@@ -1,5 +1,7 @@
 "use server";
 
+import { headers } from "next/headers";
+
 export type AuthActionState = {
   error?: string;
   access?: string;
@@ -11,6 +13,14 @@ function backendApiBase(): string {
     process.env.NEXT_PUBLIC_API_URL ??
     "http://localhost:8000/api"
   );
+}
+
+function serverOrigin(): string {
+  const h = headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  const proto = h.get("x-forwarded-proto") ?? "http";
+  if (!host) return "http://127.0.0.1:3000";
+  return `${proto}://${host}`;
 }
 
 /** AuthForm: email is username; optional register fields. */
@@ -121,9 +131,12 @@ export async function googleSignInAction(idToken: string): Promise<AuthActionSta
   if (!idToken) {
     return { error: "Missing Google credential." };
   }
-  const apiBase = backendApiBase();
+  const backendOverride = process.env.GOOGLE_AUTH_BACKEND_URL?.replace(/\/$/, "");
+  const url = backendOverride
+    ? `${backendOverride}/auth/google`
+    : `${serverOrigin()}/api/auth/google`;
   try {
-    const res = await fetch(`${apiBase}/auth/google`, {
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token: idToken }),
