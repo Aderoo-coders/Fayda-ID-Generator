@@ -1,11 +1,11 @@
 import type { BarcodeInfo, ExtractionResult, IDCardData, FaceBBox } from "@/types/id-card";
 import { FAYDA_NATIONALITY } from "@/types/id-card";
-import { detectBarcodes, type BarcodeResult } from "@/lib/barcode-detect";
+import { detectBarcodes, type BarcodeResult } from "./barcode-detect";
 import { LOW_FACE_MODEL_CONFIDENCE } from "@/lib/photo-fit";
-import { removePortraitBackground } from "@/lib/remove-portrait-background";
-import { cropFaceToDataUrl, FAYDA_PHOTO_BBOX } from "@/lib/face-crop";
-import { detectFaceLocal } from "@/lib/local-face-detect";
-import { runLocalOcr } from "@/lib/local-ocr";
+import { removePortraitBackground } from "@/engines/detection/remove-portrait-background";
+import { cropFaceToDataUrl, FAYDA_PHOTO_BBOX } from "@/engines/detection/face-crop";
+import { detectFaceLocal } from "@/engines/detection/local-face-detect";
+import { runLocalOcr } from "@/engines/detection/local-ocr";
 
 const FIELD_KEYS: (keyof IDCardData)[] = [
   "name_am", "name_en", "dob", "sex", "fin", "fan", "phone", "sn",

@@ -1,4 +1,4 @@
-import { trimEmptyEdges } from "@/lib/face-crop";
+import { trimEmptyEdges } from "@/engines/detection/face-crop";
 
 /**
  * Runs in-browser segmentation after face crop so the portrait has a transparent backdrop (PNG alpha).

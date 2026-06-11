@@ -159,8 +159,8 @@
 
 import { useEffect, useState } from 'react';
 import type { IDCardData } from '@/types/id-card';
-import { AutoFitText } from '@/components/AutoFitText';
-import { renderQrOnIdTemplate } from '@/lib/qr-render-template';
+import { AutoFitText } from '@/components/card/AutoFitText';
+import { renderQrOnIdTemplate } from '@/engines/detection/qr-render-template';
 
 const templateBgSrc = '/static/ID-back template.png';
 

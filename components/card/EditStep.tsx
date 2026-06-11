@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { IDCardData } from '@/types/id-card';
-import { cropFrontPortraitFromImage } from '@/lib/ocr';
+import { cropFrontPortraitFromImage } from '@/engines/detection/ocr';
 import { processPortraitRemote } from '@/lib/portrait-api';
 import type { PhotoSlotFitMode } from '@/lib/photo-fit';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';

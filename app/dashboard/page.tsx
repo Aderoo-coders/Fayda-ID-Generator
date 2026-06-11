@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useRef, useCallback } from 'react';
-import { StepIndicator } from '@/components/StepIndicator';
-import { UploadStep } from '@/components/UploadStep';
-import { ExtractStep } from '@/components/ExtractStep';
-import { EditStep } from '@/components/EditStep';
-import { PreviewStep } from '@/components/PreviewStep';
-import { DownloadStep } from '@/components/DownloadStep';
-import { IDCardPreview } from '@/components/id-card-preview';
-import { IDCardBackPreview } from '@/components/id-card-back-preview';
+import { StepIndicator } from '@/components/layout/StepIndicator';
+import { UploadStep } from '@/components/upload/UploadStep';
+import { ExtractStep } from '@/components/card/ExtractStep';
+import { EditStep } from '@/components/card/EditStep';
+import { PreviewStep } from '@/components/card/PreviewStep';
+import { DownloadStep } from '@/components/card/DownloadStep';
+import { IDCardPreview } from '@/components/card/id-card-preview';
+import { IDCardBackPreview } from '@/components/card/id-card-back-preview';
+
 import type { IDCardData, ExtractionResult, WorkflowStep } from '@/types/id-card';
 import type { PhotoSlotFitMode } from '@/lib/photo-fit';
 
@@ -38,6 +39,7 @@ export default function IdGeneratorHome() {
   const [qrValue, setQrValue] = useState<string | undefined>(undefined);
   const [photoSlotFit, setPhotoSlotFit] = useState<PhotoSlotFitMode>('cover');
   const [faceCropUncertain, setFaceCropUncertain] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null!);
   const backCardRef = useRef<HTMLDivElement>(null!);
 
@@ -67,6 +69,70 @@ export default function IdGeneratorHome() {
   const handleSkipExtract = useCallback(() => {
     complete('extract');
     setStep('edit');
+  }, []);
+
+  const handleSaveToHistory = useCallback(() => {
+    const cardId = `${data.fin}_${Date.now()}`;
+    const processedCard = {
+      id: cardId,
+      data,
+      createdAt: new Date().toISOString(),
+      thumbnail: data.photo || undefined,
+    };
+
+    const stored = localStorage.getItem('processedIDCards');
+    const existing = stored ? JSON.parse(stored) : [];
+    const updated = [processedCard, ...existing].slice(0, 50);
+    localStorage.setItem('processedIDCards', JSON.stringify(updated));
+
+    // Auto-send to Telegram if enabled
+    const deliveryConfig = localStorage.getItem('telegramDeliveryConfig');
+    if (deliveryConfig) {
+      try {
+        const config = JSON.parse(deliveryConfig);
+        if (config.isLinked && config.autoSendEnabled && config.chatId) {
+          sendToTelegram(data, config.chatId);
+        }
+      } catch (error) {
+        console.error('Failed to parse delivery config:', error);
+      }
+    }
+
+    setShowHistory(true);
+  }, [data]);
+
+  const sendToTelegram = useCallback(async (cardData: IDCardData, chatId: string) => {
+    try {
+      const message = `
+📋 ID Card Generated Successfully
+
+Name (EN): ${cardData.name_en}
+Name (AM): ${cardData.name_am}
+FIN: ${cardData.fin}
+FAN: ${cardData.fan}
+Date of Birth: ${cardData.dob}
+Sex: ${cardData.sex}
+
+This card has been automatically delivered to you.
+`.trim();
+
+      await fetch('/api/telegram/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chatId,
+          message,
+          cardData,
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to send to Telegram:', error);
+    }
+  }, []);
+
+  const handleSelectFromHistory = useCallback((card: any) => {
+    setData(card.data);
+    setStep('download');
   }, []);
 
   return (
@@ -124,7 +190,17 @@ export default function IdGeneratorHome() {
               <IDCardPreview data={data} cardRef={cardRef} />
               <IDCardBackPreview data={data} qrValue={qrValue} backCardRef={backCardRef} />
             </div>
-            <DownloadStep cardRef={cardRef} backCardRef={backCardRef} />
+            <div className="flex flex-wrap gap-3 justify-center mb-8">
+              <DownloadStep cardRef={cardRef} backCardRef={backCardRef} />
+            </div>
+            <button
+              onClick={() => {
+                handleSaveToHistory();
+              }}
+              className="mx-auto block px-6 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
+            >
+              Save to History
+            </button>
           </>
         )}
       </main>

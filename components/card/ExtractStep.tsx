@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Loader2, CheckCircle2, AlertCircle, Sparkles, ScanFace, ScanBarcode } from 'lucide-react';
-import { extractWithAI } from '@/lib/ai-extract';
+import { extractWithAI } from '@/engines/detection/ai-extract';
 // Uses Gemini AI via Lovable AI Gateway + MediaPipe face detection
 import { Button } from '@/components/ui/button';
-import { BarcodeOverlay } from '@/components/BarcodeOverlay';
+import { BarcodeOverlay } from '@/components/card/BarcodeOverlay';
 import type { ExtractionResult, FaceBBox } from '@/types/id-card';
 
 interface Props {

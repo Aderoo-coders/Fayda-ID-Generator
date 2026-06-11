@@ -8,7 +8,7 @@
  * so there is no extra dependency cost.
  */
 
-import { NORM_W, NORM_H } from '@/lib/face-crop';
+import { NORM_W, NORM_H } from '@/engines/detection/face-crop';
 
 /** Normalized 0..1 region on the canonical NORM_W × NORM_H card canvas. */
 export interface PixelRegion {

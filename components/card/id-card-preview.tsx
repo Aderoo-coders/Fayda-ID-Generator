@@ -160,7 +160,7 @@
 'use client';
 
 import type { IDCardData } from '@/types/id-card';
-import { Barcode } from './Barcode';
+import { Barcode } from '../Barcode';
 import { formatDualDate } from '@/lib/date-utils';
 
 const templateBgSrc = encodeURI('/static/ID-front template.png');

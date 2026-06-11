@@ -1,4 +1,4 @@
-import { scanCanvas, imageToCanvas, type Detection } from "./qr-scan";
+import { scanCanvas, imageToCanvas, type Detection } from "@/engines/detection/qr-scan";
 
 export interface BarcodeBBox {
   x: number;

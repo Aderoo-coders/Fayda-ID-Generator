@@ -1,5 +1,5 @@
 import Link from "next/link";
-import LandingHero from "@/components/LandingHero";
+import LandingHero from "@/components/layout/LandingHero";
 
 export default function HomePage() {
   const steps = [

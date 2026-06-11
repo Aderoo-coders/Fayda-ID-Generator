@@ -1,21 +1,7 @@
-/**
- * Local OCR pipeline for Fayda national ID cards.
- *
- * Replaces the cloud LLM call with Tesseract.js running fully in the browser
- * via WebAssembly. The previous implementation relied on label-anchored regex
- * matching ("FIN: 1234..."), which was brittle because Tesseract regularly
- * mis-OCRs labels (e.g. "FIN" → "F1N", "Date of Birth" → "Date of Birih").
- *
- * The new strategy is POSITION-FREE pattern matching: we look for the shape
- * of each value (12-digit run for FIN, 16-digit run for FAN, DD/MM/YYYY for
- * dates, etc.) anywhere in the OCR output, then rank candidates by context.
- * Combined with Otsu binarization the field hit-rate goes from ~30 % to ~75 %
- * on typical phone-camera scans of Fayda cards.
- */
 
 import { createWorker, type Worker as TesseractWorker } from 'tesseract.js';
 import type { IDCardData } from '@/types/id-card';
-import { NORM_W, NORM_H } from '@/lib/face-crop';
+import { NORM_W, NORM_H } from '@/engines/detection/face-crop';
 import {
   normalizeCardCanvas,
   enhanceForOcr,
@@ -23,7 +9,7 @@ import {
   canvasToDataUrl,
   cropRegion,
   type PixelRegion,
-} from '@/lib/local-preprocess';
+} from '@/engines/detection/local-preprocess';
 
 /* -------------------------------------------------------------------------- */
 /* Fixed Fayda field regions                                                  */
@@ -345,17 +331,6 @@ function postProcessFieldValue(field: keyof IDCardData, raw: string): string {
   }
 }
 
-/**
- * Run Tesseract on every measured Fayda field region for the given side.
- * Returns the cleaned values for the fields it could read; missing keys mean
- * either the crop produced no usable text or the value failed shape
- * validation.
- *
- * Sequential execution is intentional: the eng + amh workers each handle one
- * recognize() at a time, and the per-field setParameters call would race if
- * we tried to parallelise. With 6-7 small crops per side the whole pass
- * takes ~1-2 s on a modern laptop, well below user-visible latency.
- */
 async function runFieldRegionOcr(
   fullCanvas: HTMLCanvasElement,
   side: CardSide,
@@ -378,16 +353,6 @@ async function runFieldRegionOcr(
   return fields;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Position-free pattern parsers                                              */
-/* -------------------------------------------------------------------------- */
-
-/**
- * Tesseract often confuses these glyph pairs. We normalise digit-shaped
- * letters into digits before running our digit pattern matchers, but only
- * inside long runs that look numeric — we don't want to clobber real letters
- * inside the name.
- */
 function digitFix(s: string): string {
   return s
     .replace(/O/g, '0').replace(/o/g, '0')
