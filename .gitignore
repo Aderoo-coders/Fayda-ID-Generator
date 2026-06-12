@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+.DS_Store
+node_modules/
+.next/
+dist/
+media/
+frontend/.data/
