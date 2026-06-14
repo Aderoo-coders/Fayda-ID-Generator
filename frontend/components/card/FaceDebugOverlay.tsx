@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import type { FaceBBox } from '@/types/id-card';
-import { FAYDA_PHOTO_BBOX } from '@/lib/face-crop';
+import { FAYDA_PHOTO_BBOX } from '@/engines/detection/face-crop';
 
 export { FAYDA_PHOTO_BBOX };
 

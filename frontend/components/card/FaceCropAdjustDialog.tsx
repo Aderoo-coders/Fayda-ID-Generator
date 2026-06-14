@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import type { FaceBBox } from '@/types/id-card';
 import type { PhotoSlotFitMode } from '@/lib/photo-fit';
-import { clampBBox, cropFaceToDataUrl } from '@/lib/face-crop';
+import { clampBBox, cropFaceToDataUrl } from '@/engines/detection/face-crop';
 import { Loader2 } from 'lucide-react';
 
 type ResizeMode = 'move' | 'nw' | 'ne' | 'sw' | 'se' | 'n' | 's' | 'e' | 'w';

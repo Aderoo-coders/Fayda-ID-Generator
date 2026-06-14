@@ -503,7 +503,6 @@ function makeEmptyResult(): ExtractionResult {
  * pattern-matched values, and we still avoid an API call when local is
  * sufficient — though we can't know that until both finish).
  *
-/**
  * To force pure-offline mode set NEXT_PUBLIC_USE_CLOUD_AI=false in .env.
  */
 const USE_CLOUD_AI = (() => {

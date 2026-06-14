@@ -1,10 +1,15 @@
-import * as pdfjsLib from 'pdfjs-dist';
+/**
+ * Lazy-loads pdfjs-dist only in the browser to avoid import.meta errors during
+ * server-side compilation. All exports here are async and client-only.
+ */
 
-// Use the bundled worker from pdfjs-dist
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString();
+async function getPdfjsLib() {
+  const pdfjsLib = await import('pdfjs-dist');
+  if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version || '4.10.38'}/build/pdf.worker.min.mjs`;
+  }
+  return pdfjsLib;
+}
 
 /**
  * Renders a single page of a PDF to a data-URL image (PNG).
@@ -17,6 +22,7 @@ export async function renderPdfPageToImage(
   pageNumber: number,
   scale = 2,
 ): Promise<string> {
+  const pdfjsLib = await getPdfjsLib();
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
@@ -41,6 +47,7 @@ export async function renderPdfPageToImage(
  * Returns the total page count of a PDF file.
  */
 export async function getPdfPageCount(file: File): Promise<number> {
+  const pdfjsLib = await getPdfjsLib();
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   return pdf.numPages;

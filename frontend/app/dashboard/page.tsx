@@ -1,14 +1,32 @@
 "use client";
 
 import { useState, useRef, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import { StepIndicator } from '@/components/layout/StepIndicator';
-import { UploadStep } from '@/components/upload/UploadStep';
-import { ExtractStep } from '@/components/card/ExtractStep';
-import { EditStep } from '@/components/card/EditStep';
-import { PreviewStep } from '@/components/card/PreviewStep';
-import { DownloadStep } from '@/components/card/DownloadStep';
-import { IDCardPreview } from '@/components/card/id-card-preview';
-import { IDCardBackPreview } from '@/components/card/id-card-back-preview';
+
+// Dynamically import heavy/browser-only workflow components with SSR disabled
+const UploadStep = dynamic(() => import('@/components/upload/UploadStep').then((mod) => mod.UploadStep), {
+  ssr: false,
+});
+const ExtractStep = dynamic(() => import('@/components/card/ExtractStep').then((mod) => mod.ExtractStep), {
+  ssr: false,
+});
+const EditStep = dynamic(() => import('@/components/card/EditStep').then((mod) => mod.EditStep), {
+  ssr: false,
+});
+const PreviewStep = dynamic(() => import('@/components/card/PreviewStep').then((mod) => mod.PreviewStep), {
+  ssr: false,
+});
+const DownloadStep = dynamic(() => import('@/components/card/DownloadStep').then((mod) => mod.DownloadStep), {
+  ssr: false,
+});
+
+const IDCardPreview = dynamic(() => import('@/components/card/id-card-preview').then((mod) => mod.IDCardPreview), {
+  ssr: false,
+});
+const IDCardBackPreview = dynamic(() => import('@/components/card/id-card-back-preview').then((mod) => mod.IDCardBackPreview), {
+  ssr: false,
+});
 
 import type { IDCardData, ExtractionResult, WorkflowStep } from '@/types/id-card';
 import type { PhotoSlotFitMode } from '@/lib/photo-fit';
