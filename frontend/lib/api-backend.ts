@@ -30,7 +30,7 @@ export async function proxyToBackend(
   const url = `${base}/${path}`;
   try {
     const headers = new Headers();
-    req.headers.forEach((value, key) => {
+    req.headers.forEach((value: string, key: string) => {
       const k = key.toLowerCase();
       if (k === "host" || k === "connection") return;
       headers.set(key, value);

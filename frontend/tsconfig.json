@@ -18,7 +18,11 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": ".", 
+    "baseUrl": ".",
+    "typeRoots": [
+      "./node_modules/@types",
+      "../node_modules/@types"
+    ],
     "paths": {
       "@/components/*": ["./components/*", "./app/components/*"],
       "@/hooks/*": ["./app/hooks/*"],
