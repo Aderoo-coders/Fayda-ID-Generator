@@ -3,6 +3,19 @@
  * server-side compilation. All exports here are async and client-only.
  */
 
+// Polyfill Promise.withResolvers for environments lacking native support (e.g. Node v18/v20)
+if (typeof Promise.withResolvers === "undefined") {
+  Promise.withResolvers = function <T>() {
+    let resolve!: (value: T | PromiseLike<T>) => void;
+    let reject!: (reason?: any) => void;
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  };
+}
+
 async function getPdfjsLib() {
   const pdfjsLib = await import('pdfjs-dist');
   if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
