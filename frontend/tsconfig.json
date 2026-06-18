@@ -22,7 +22,11 @@
     "paths": {
       "@/components/*": ["./components/*", "./app/components/*"],
       "@/hooks/*": ["./app/hooks/*"],
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      // Workaround: onnxruntime-web@1.x puts "types" at the package root but
+      // omits it from its "exports" map, so moduleResolution "bundler" cannot
+      // find it automatically. Redirect TS directly to the known types file.
+      "onnxruntime-web": ["../node_modules/onnxruntime-web/types.d.ts"]
     },
     "plugins": [
       {
