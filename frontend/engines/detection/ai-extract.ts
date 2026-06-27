@@ -241,8 +241,8 @@ export function isValidAiFaceBBox(bb: FaceBBox | undefined): bb is FaceBBox {
  * - Otherwise the AI box is averaged with the fixed layout (weighted toward
  *   the fixed layout) so the result is stable across reruns.
  */
-const MAX_DRIFT = 0.08;
-const FIXED_WEIGHT = 0.6;
+const MAX_DRIFT = 0.15;  // allow up to 15% deviation from fixed layout before discarding AI bbox
+const FIXED_WEIGHT = 0.5; // equal blend of AI + fixed when both are trustworthy
 function blendWithFixed(ai: FaceBBox): FaceBBox {
   const f = FAYDA_PHOTO_BBOX;
   const drifted =

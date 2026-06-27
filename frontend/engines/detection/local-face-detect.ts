@@ -28,19 +28,35 @@ let detectorPromise: Promise<FaceDetector> | null = null;
  * Lazily construct (and cache) the FaceDetector. The first call downloads the
  * WASM runtime + model; subsequent calls reuse the same instance. Runs in
  * IMAGE mode for one-shot inference on uploaded ID card photos.
+ *
+ * Tries GPU delegate first for speed; automatically falls back to CPU when
+ * WebGL is unavailable or the GPU WASM fails to load (common in some
+ * headless / sandboxed browser environments).
  */
 async function getDetector(): Promise<FaceDetector> {
   if (!detectorPromise) {
     detectorPromise = (async () => {
       const fileset = await FilesetResolver.forVisionTasks(WASM_BASE_URL);
-      return FaceDetector.createFromOptions(fileset, {
-        baseOptions: {
-          modelAssetPath: MODEL_URL,
-          delegate: 'GPU',
-        },
-        runningMode: 'IMAGE',
-        minDetectionConfidence: 0.5,
-      });
+      const baseOptions = { modelAssetPath: MODEL_URL };
+      const runningMode = 'IMAGE' as const;
+      // minDetectionConfidence must match isValidAiFaceBBox's enoughConf threshold (0.6)
+      // so we never produce a detection that the downstream validator immediately rejects.
+      const minDetectionConfidence = 0.6;
+
+      try {
+        return await FaceDetector.createFromOptions(fileset, {
+          baseOptions: { ...baseOptions, delegate: 'GPU' },
+          runningMode,
+          minDetectionConfidence,
+        });
+      } catch (gpuErr) {
+        console.warn('[local-face-detect] GPU delegate unavailable; retrying with CPU.', gpuErr);
+        return FaceDetector.createFromOptions(fileset, {
+          baseOptions: { ...baseOptions, delegate: 'CPU' },
+          runningMode,
+          minDetectionConfidence,
+        });
+      }
     })().catch((err) => {
       // Reset on failure so the next call retries (helps after offline → online).
       detectorPromise = null;
